@@ -46,15 +46,19 @@
 
         const image = document.querySelector('#img-1')
 
+        const text = document.querySelector('#text')
+
         const cnv = document.querySelector('#cnv')
         cnv.width = ww
         cnv.height = wh
         const ctx = cnv.getContext('2d')
         optimizeCanvas(cnv)
 
+
         image.addEventListener('load', () => {
             update()
         })
+        
 
 
         const player = {
@@ -76,12 +80,24 @@
         }
 
         function drawObjects() {
+
+            ctx.save()
+
             ctx.fillStyle = 'black'
+            ctx.shadowColor = "yellow";
+            ctx.shadowOffsetX = 0;
+            ctx.shadowBlur = 30;
             ctx.beginPath()
             ctx.fillRect(circle.x, circle.y, circle.w, circle.h)
             console.log(circle.x, circle.y)
             // ctx.arc(circle.x, circle.y, circle.d, 0, Math.PI * 2)
             ctx.fill()
+
+            // ctx.font = '48px serif';
+            // ctx.fillText('Hello move around with arrow keys', 10, 50);
+            ctx.restore()
+
+            
         }
 
 
@@ -102,6 +118,8 @@
         let r = 100
         let d = 50
         let size = 10
+        let i
+        let j
 
         function fancyBg() {
             // for(let i = 0; i < 5; i++) {
@@ -130,10 +148,18 @@
             }
 
             if(player.x < ww/2) {
-                size = size + player.x / 10000
-            } else if(player.x > ww/2) {
-                size = size - player.x / 10000
+                size = size + (player.dx/50)
             } 
+            if(size < 0){
+                size = 0
+            }
+            if(player.x > ww/2) {
+                size = size + (player.dx/30)
+            } 
+
+            // if(player.x > ww) {
+                
+            // }
         }
 
         function detectObject() {
