@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            background: grey;
+            display: block;
+        }
+
+        #img-1 {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="cnv"></canvas>
+    <img id="img-1" src="images/goomba.png" alt="">
+    <!-- <img id="img-2" src="images/output_76guqf.gif" alt=""> -->
+
+    <script>
+        function optimizeCanvas(cnv) {
+            const dpr = window.devicePixelRatio
+            const rect = cnv.getBoundingClientRect()
+            cnv.width = rect.width * dpr
+            cnv.height = rect.height * dpr
+            cnv.getContext('2d').scale(dpr, dpr)
+            cnv.style.width = `${rect.width}px`
+            cnv.style.height = `${rect.height}px`
+        }
+
+
+        console.clear()
+
+        const ww = window.innerWidth
+        const wh = window.innerHeight
+
+        const image = document.querySelector('#img-1')
+
+        const cnv = document.querySelector('#cnv')
+        cnv.width = ww
+        cnv.height = wh
+        const ctx = cnv.getContext('2d')
+        optimizeCanvas(cnv)
+
+        image.addEventListener('load', () => {
+            update()
+        })
+
+
+        const player = {
+            w: 30,
+            h: 30,
+            x: 20,
+            y: 200,
+            speed: 5,
+            dx: 0,
+            dy: 0
+        }
+
+
+        const circle = {
+            x: Math.floor(Math.random() * ww),
+            y: Math.floor(Math.random() * wh),
+            w: 30,
+            h: 30
+        }
+
+        function drawObjects() {
+            ctx.fillStyle = 'black'
+            ctx.beginPath()
+            ctx.fillRect(circle.x, circle.y, circle.w, circle.h)
+            console.log(circle.x, circle.y)
+            // ctx.arc(circle.x, circle.y, circle.d, 0, Math.PI * 2)
+            ctx.fill()
+        }
+
+
+        function drawPlayer() {
+            ctx.drawImage(image, player.x, player.y, player.w, player.h)
+
+            // window.requestAnimationFrame(draw)
+        }
+
+        function newPos() {
+            player.x += player.dx
+            player.y += player.dy
+
+            detectObject()
+        }
+
+        let a = 12.5
+        let r = 100
+        let d = 50
+        let size = 10
+
+        function fancyBg() {
+            // for(let i = 0; i < 5; i++) {
+
+            //     ctx.save()
+
+            //     ctx.translate(ww/2, wh/2)
+            //     ctx.fillStyle = 'blue'
+            //     ctx.beginPath()
+            //     const x = Math.sin(a) * r
+            //     const y = Math.cos(a) * r
+            //     a += 0.01
+            //     ctx.arc(x, y, d, 0, Math.PI * 2)
+            //     ctx.fill()
+
+            //     ctx.restore()
+            // }
+
+            for (let i = 0; i < ww/a; i++) {
+                for (let j = 0; j < wh/a; j++) {
+                    ctx.strokeStyle = `rgb(0, ${Math.floor(255 - 10 * i)}, ${Math.floor(255 - 10 * j)})`;
+                    ctx.beginPath();
+                    ctx.arc(a + j * 2*a, a + i * 2*a, size, 0, 2 * Math.PI, true);
+                    ctx.stroke();
+                }
+            }
+
+            if(player.x < ww/2) {
+                size = size + player.x / 10000
+            } else if(player.x > ww/2) {
+                size = size - player.x / 10000
+            } 
+        }
+
+        function detectObject() {
+            // x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight
+            if (player.x > circle.x - circle.w && player.x < circle.x + circle.w && player.y > circle.y - circle.h && player.y < circle.y + circle.h) {
+                circle.w = ww
+                circle.h = wh
+                circle.x = 0
+                circle.y = 0
+
+                fancyBg()
+            }
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, ww, wh)
+
+            drawObjects()
+
+            drawPlayer()
+
+            newPos()
+
+            requestAnimationFrame(update)
+        }
+
+        function moveUp() {
+            player.dy = -player.speed
+        }
+
+        function moveDown() {
+            player.dy = player.speed
+        }
+
+        function moveLeft() {
+            player.dx = -player.speed
+        }
+
+        function moveRight() {
+            player.dx = player.speed
+        }
+
+        function keyDown(e) {
+            if (e.key === 'ArrowRight' || e.key === 'Right') {
+                moveRight()
+            } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+                moveLeft()
+            } else if (e.key === 'ArrowUp' || e.key === 'Up') {
+                moveUp()
+            } else if (e.key === 'ArrowDown' || e.key === 'Down') {
+                moveDown()
+            }
+        }
+
+        function keyUp(e) {
+            if (
+                e.key == 'Right' ||
+                e.key == 'ArrowRight' ||
+                e.key == 'Left' ||
+                e.key == 'ArrowLeft' ||
+                e.key == 'Up' ||
+                e.key == 'ArrowUp' ||
+                e.key == 'Down' ||
+                e.key == 'ArrowDown'
+            ) {
+                player.dx = 0
+                player.dy = 0
+            }
+        }
+
+        document.addEventListener('keydown', keyDown)
+        document.addEventListener('keyup', keyUp)
+
+
+
+        // update()
+
+        // draw()
+
+
+
+    </script>
+
+</body>
+
+</html>
